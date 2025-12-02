@@ -1,0 +1,10 @@
+@font-face {
+    font-family: Roboto;
+    src: url('../fonts/Roboto-Regular.ttf');
+}
+
+#app {
+    padding: 15px;
+    max-width: 1200px;
+    margin: 10px auto;
+}

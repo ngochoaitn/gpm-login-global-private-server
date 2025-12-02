@@ -1,0 +1,291 @@
+@font-face {
+    font-family: Roboto;
+    src: url('../fonts/Roboto-Regular.ttf');
+}
+
+* {
+    margin: 0px;
+    padding: 0px;
+    font-family: Roboto, sans-serif;
+    color: #404040;
+    font-size: 14px;
+}
+
+body {
+    background: #F0F1F1 !important;
+}
+
+/* Left menu */
+.left-menu {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    height: inherit;
+    min-height: 100%;
+    width: 250px;
+    background: #202D3F;
+    overflow-y: hidden;
+}
+
+.left-menu ul {
+    list-style-type: none;
+    padding: 0px;
+}
+
+.left-menu__logo {
+    padding: 15px 30px 10px 30px;
+    color: white;
+    height: 55px;
+}
+
+.left-menu__logo h1 {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+}
+
+.left-menu ul li {
+    display: block;
+    padding: 10px 30px 10px 30px;
+}
+
+.left-menu .selected {
+    background: #2A3A51;
+}
+
+.left-menu__item:hover {
+    background: #3D5576;
+}
+
+.left-menu ul li a {
+    color: #EAECEC !important;
+    text-decoration: none;
+    font-size: 14px;
+    display: block;
+}
+
+.left-menu__hr {
+    color: #414141;
+    background: #414141;
+    width: 100%;
+    height: 1px;
+    padding: 0px !important;
+}
+
+.fas {
+    color: white !important;
+}
+
+.far {
+    color: white !important;
+}
+
+.toogle-left-menu {
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 600px) {
+    .left-menu {
+        margin-left: -250px !important;
+    }
+
+    .content-wrapper {
+        margin-left: 0px !important;
+    }
+}
+
+/* Top menu */
+.top-menu {
+    height: 55px;
+    background: white;
+    padding: 15px;
+}
+
+.top-menu__header {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.content-wrapper {
+    background: #F0F1F1;
+    margin-left: 250px;
+}
+
+.top-menu__user-box {
+    padding-right: 10px;
+    cursor: pointer;
+}
+
+.top-menu__user-box a {
+    color: #464646;
+    text-decoration: none;
+}
+
+#left-menu-toogle-button {
+    cursor: pointer;
+}
+
+/* Content */
+.web-content {
+    padding: 20px;
+}
+
+.web-content h1 {
+    font-size: 20px;
+}
+
+.table {
+    background: white !important;
+}
+
+.table td {
+    padding: 15px !important;
+}
+
+.table th {
+    padding: 15px !important;
+}
+
+
+.btn-edit {
+    background: #0080C0;
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+    color: white;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.btn-edit:hover {
+    background: #009EEA;
+}
+
+.btn-order-check {
+    background: #009525;
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+    color: white;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.btn-order-check:hover {
+    background: #00BB2F;
+}
+
+.btn-del {
+    background: #C40000;
+    border-radius: 5px;
+    color: white;
+    padding: 5px 10px 5px 10px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.btn-del:hover {
+    background: #F00000;
+}
+
+/* Content */
+.center-box {
+    margin: 20px auto;
+    max-width: 1000px;
+    padding: 20px;
+    background: white;
+    border-radius: 5px;
+    border: 1px solid #ebebeb;
+}
+
+/* Override boostrap */
+.btn {
+    font-size: 14px !important;
+}
+
+.btn-success {
+    background: #00A88E !important;
+    border: 1px solid #00A88E !important;
+}
+
+.btn-success:hover {
+    background: #00BFA3 !important;
+}
+
+.btn-light {
+    border: 1px solid #D8D8D8 !important;
+}
+
+.form-control {
+    font-size: 14px !important;
+}
+
+.active .page-link {
+    background: #6C6C6C !important;
+    border-color: #6C6C6C !important;
+    color: white !important;
+}
+
+.page-link {
+    color: black !important;
+}
+
+a {
+    text-decoration: none !important;
+}
+
+.select2 {
+    width: 100% !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.25rem !important;
+    height: 35px;
+    background: white !important;
+}
+
+.select2-selection {
+    border: none !important;
+    padding: 0.3rem 0.5rem;
+}
+
+.content-wrapper label {
+    padding-bottom: 5px !important;
+}
+
+/* Components */
+.small-box {
+    border-radius: 0.25rem;
+    box-shadow: 0 0 1px rgb(0 0 0 / 13%), 0 1px 3px rgb(0 0 0 / 20%);
+    display: block;
+    margin-bottom: 20px;
+    position: relative;
+    padding: 10px 20px 10px 20px;
+}
+
+.small-box h3 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    padding: 0;
+    white-space: nowrap;
+    color: white;
+}
+
+.small-box p {
+    color: white;
+}
+
+.small-box a {
+    color: white;
+    text-decoration: none;
+}
+
+.small-box a:hover {
+    color: white;
+    text-decoration: none;
+}
+
+.bg-info {
+    background-color: #17a2b8!important;
+}
+
+.bg-info, .bg-info>a {
+    color: #fff!important;
+}
