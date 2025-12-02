@@ -33,8 +33,8 @@ docker compose -f docker-compose-php-fpm.yml up -d --build
 
 ## Docker builder
 ```
-docker build -t ngochoaitn/gpm-login-private-server:beta-test .
-docker push ngochoaitn/gpm-login-private-server:beta-test 
+docker build -t ngochoaitn/gpm-login-global-private-server:latest .
+docker push ngochoaitn/gpm-login-global-private-server:latest
 
 docker buildx create --name mybuilder --use --driver docker-container
 docker buildx inspect --bootstrap
@@ -42,10 +42,10 @@ docker buildx inspect --bootstrap
 
 ## Docker publish
 ```
-docker buildx build --platform linux/amd64,linux/arm64 -t ngochoaitn/gpm-login-private-server:latest --push .
-docker buildx build --platform linux/amd64,linux/arm64 -t ngochoaitn/gpm-login-private-server:php8_1_apache --push .
-docker buildx build --platform linux/amd64,linux/arm64 -t ngochoaitn/gpm-login-private-server:php_fpm --push -f ./docker/php-fpm/Dockerfile .
-docker buildx build --platform linux/amd64,linux/arm64 -t ngochoaitn/gpm-login-private-server:dev-test --push .
+docker buildx build --platform linux/amd64,linux/arm64 -t ngochoaitn/gpm-login-global-private-server:latest --push .
+docker buildx build --platform linux/amd64,linux/arm64 -t ngochoaitn/gpm-login-global-private-server:php8_1_apache --push .
+docker buildx build --platform linux/amd64,linux/arm64 -t ngochoaitn/gpm-login-global-private-server:php_fpm --push -f ./docker/php-fpm/Dockerfile .
+docker buildx build --platform linux/amd64,linux/arm64 -t ngochoaitn/gpm-login-global-private-server:dev-test --push .
 ```
 
 ## Create file update
