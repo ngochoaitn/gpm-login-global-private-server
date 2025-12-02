@@ -20,6 +20,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . /var/www/html
 WORKDIR /var/www/html
 
+RUN mkdir -p storage/app/public/profiles
+
 # Cấp quyền ghi cho storage và bootstrap/cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
@@ -38,7 +40,7 @@ EXPOSE 80
 RUN rm -rf public/storage
 RUN php artisan storage:link
 RUN php artisan key:generate
-# RUN chmod -Rf 777 ./storage
+
 RUN chmod 777 /var/www/html/.env
 
 CMD ["apache2-foreground"]

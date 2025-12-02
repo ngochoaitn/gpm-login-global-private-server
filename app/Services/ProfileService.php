@@ -190,7 +190,7 @@ class ProfileService
     public function createProfile(string $name, string $storagePath, ?string $fingerprintData, ?string $dynamicData, ?array $metaData, ?string $groupId, string $userId, string $storageType = Profile::STORAGE_S3)
     {
         if ($groupId == null) {
-            $groupId = Group::where('name', 'All')->first()->id;
+            $groupId = '00000000-0000-0000-0000-000000000000'; // Group::where('name', 'Default group')->first()->id;
         }
         $profile = new Profile();
         $profile->name = $name;
