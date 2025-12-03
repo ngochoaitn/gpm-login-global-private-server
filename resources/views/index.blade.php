@@ -131,7 +131,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div id="s3Conconfig_CustomeRegion" class="col-md-6" @if($storageType !='s3' ) style="display: none;" @endif>
                     <div class="d-flex">
                         <input type="checkbox" class="form-check-input me-2" name="cbo_custom_region" id="cbo_custom_region"
                         {{ $isCustomRegion ? 'checked' : '' }}/>
@@ -241,10 +241,13 @@
 <script>
 function handleStorageTypeChange(select) {
     var s3Config = document.getElementById("s3Config");
+    var s3Conconfig_CustomeRegion = document.getElementById("s3Conconfig_CustomeRegion");
     if (select.value === "s3") {
         s3Config.style.display = "block";
+        s3Conconfig_CustomeRegion.style.display = "block";
     } else {
         s3Config.style.display = "none";
+        s3Conconfig_CustomeRegion.style.display = "none";
     }
 }
 
