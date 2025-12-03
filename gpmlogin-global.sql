@@ -75,7 +75,7 @@ CREATE TABLE `groups` (
 
 LOCK TABLES `groups` WRITE;
 /*!40000 ALTER TABLE `groups` DISABLE KEYS */;
-INSERT INTO `groups` VALUES ('00000000-0000-0000-0000-000000000000','Default group',0,'ab693d72-8ba7-4017-8ca7-8fd44948afba','2025-09-02 20:02:49','2025-09-02 20:02:49','ab693d72-8ba7-4017-8ca7-8fd44948afba'),('56095d05-35ec-4582-a1b2-deecff47fef0','delectus explicabo',62,'ab693d72-8ba7-4017-8ca7-8fd44948afba','2025-09-02 20:02:49','2025-09-02 20:02:49','ab693d72-8ba7-4017-8ca7-8fd44948afba'),('8208f39b-a816-4fe5-9d01-0d04065eb486','ut aut',99,'ab693d72-8ba7-4017-8ca7-8fd44948afba','2025-09-02 20:02:49','2025-09-02 20:02:49','ab693d72-8ba7-4017-8ca7-8fd44948afba'),('9252d7d9-ddb3-454b-9499-17d92c4e4ca5','dignissimos quasi',4,'ab693d72-8ba7-4017-8ca7-8fd44948afba','2025-09-02 20:02:49','2025-09-02 20:02:49','ab693d72-8ba7-4017-8ca7-8fd44948afba'),('9c18c6ae-fde5-4382-a6c6-779b620abb0a','quisquam ea',31,'ab693d72-8ba7-4017-8ca7-8fd44948afba','2025-09-02 20:02:49','2025-09-02 20:02:49','ab693d72-8ba7-4017-8ca7-8fd44948afba'),('a099a0f4-99b8-46d7-a8b4-d517c091d390','sint fuga',78,'ab693d72-8ba7-4017-8ca7-8fd44948afba','2025-09-02 20:02:49','2025-09-02 20:02:49','ab693d72-8ba7-4017-8ca7-8fd44948afba'),('eb1955cc-9f8e-4bf1-bda4-eacf32d95e31','Test filter group',50,'ab693d72-8ba7-4017-8ca7-8fd44948afba','2025-09-02 20:02:49','2025-09-02 20:02:49','ab693d72-8ba7-4017-8ca7-8fd44948afba');
+INSERT INTO `groups` VALUES ('00000000-0000-0000-0000-000000000000','Default group',0,'ab693d72-8ba7-4017-8ca7-8fd44948afba','2025-09-02 20:02:49','2025-09-02 20:02:49','ab693d72-8ba7-4017-8ca7-8fd44948afba');
 /*!40000 ALTER TABLE `groups` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -351,6 +351,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
+INSERT INTO `settings` VALUES ('s3_region','APEast1');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
