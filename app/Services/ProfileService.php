@@ -14,6 +14,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
+use function Illuminate\Events\queueable;
+
 class ProfileService
 {
     protected TagService $tagService;
@@ -120,6 +122,9 @@ class ProfileService
                 if ($createdUser != null) {
                     $query->where('created_by', $createdUser->id);
                 }
+            } else if (str_contains($filters['search'], 'note:')) {
+                $note = trim(str_replace('note:', '', $filters['search']));
+                $query->where('dynamic_data->note', 'like', "%$note%");
             } else {
                 $query->where(function ($q) use ($filters) {
                     $q->where('name', 'like', "%{$filters['search']}%");
