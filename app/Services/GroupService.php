@@ -62,6 +62,29 @@ class GroupService
     }
 
     /**
+     * Get group name by ID
+     *
+     * @param string $id
+     * @return string|null
+     */
+    public function getName($id)
+    {
+        $user = auth()->user();
+        $group = Group::find($id);
+        if($group == null) {
+            return null;
+        }
+
+        if($group->id != '00000000-0000-0000-0000-000000000000') {
+            if(!$this->canAccessGroup($id, $user, [GroupShare::ROLE_FULL, GroupShare::ROLE_EDIT, GroupShare::ROLE_VIEW])) {
+                return null;
+            }
+        }
+
+        return $group->name;
+    }
+
+    /**
      * Create a new group
      *
      * @param string $name

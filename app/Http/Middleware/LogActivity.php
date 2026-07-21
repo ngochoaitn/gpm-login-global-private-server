@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use App\Models\Log as LogModel;
 use App\Services\LogService;
+use App\Services\ProfileService;
+use App\Services\GroupService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -26,15 +28,33 @@ class LogActivity
 {
     private const SKIP_SEGMENTS = ['api', 'v1', 'v2', 'admin'];
 
-    protected $logService;
+    protected LogService $logService;
+    protected ProfileService $profileService;
+    protected GroupService $groupService;
 
-    public function __construct(LogService $logService)
+    public function __construct(LogService $logService,
+                                ProfileService $profileService,
+                                GroupService $groupService)
     {
         $this->logService = $logService;
+        $this->profileService = $profileService;
+        $this->groupService = $groupService;
     }
 
     public function handle(Request $request, Closure $next, ?string $targetType = null)
     {
+        // Resolve the target's name BEFORE the request runs — a delete wipes the
+        // row, so reading it afterwards always comes back empty.
+        $nameDeleted = null;
+        try {
+            $nameDeleted = $this->resolveDeletedName($request);
+        } catch (\Throwable $e) {
+            Log::error('LogActivity name lookup failed: ' . $e->getMessage(), [
+                'exception' => $e,
+                'path' => $request->path(),
+            ]);
+        }
+
         $response = $next($request);
 
         try {
@@ -95,14 +115,20 @@ class LogActivity
                 ? (string) $statusCode
                 : sprintf('%d %s', $statusCode, $bodySuccess ? 'success' : 'fail');
 
+            $requestPath = $request->path();
             $message = sprintf(
                 '[%s] /%s -> %s',
                 $request->method(),
-                $request->path(),
+                $requestPath,
                 $outcome
             );
             if ($bodyMessage !== null && $bodyMessage !== '') {
                 $message .= ' | ' . $bodyMessage;
+            }
+
+            // Name captured before the request ran (see top of handle()).
+            if ($nameDeleted !== null) {
+                $message .= ' (' . $nameDeleted . ')';
             }
 
             $this->logService->create($targetId, $targetType, $type, $message);
@@ -117,6 +143,32 @@ class LogActivity
         }
 
         return $response;
+    }
+
+    /**
+     * Name of the entity a `/delete/{id}` request is about to remove, or null
+     * when the route isn't a delete or the entity can't be resolved.
+     */
+    private function resolveDeletedName(Request $request): ?string
+    {
+        $requestPath = $request->path();
+        if (!str_contains($requestPath, '/delete/')) {
+            return null;
+        }
+
+        $targetId = $request->route()?->parameter('id');
+        if (!is_string($targetId) || $targetId === '') {
+            return null;
+        }
+
+        if (str_contains($requestPath, '/profiles/')) {
+            return $this->profileService->getName($targetId);
+        }
+        if (str_contains($requestPath, '/groups/')) {
+            return $this->groupService->getName($targetId);
+        }
+
+        return null;
     }
 
     /**

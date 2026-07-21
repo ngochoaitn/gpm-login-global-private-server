@@ -251,6 +251,22 @@ class ProfileService
     }
 
     /**
+     * Get profile name by ID
+     *
+     * @param string $id
+     * @return string|null
+     */
+    public function getName(string $id)
+    {
+        $user = auth()->user();
+        if (!$user || !$this->canAccessProfile($id, $user)) {
+            return null;
+        }
+
+        return Profile::where('id', $id)->value('name');
+    }
+
+    /**
      * Update profile
      *
      * @param int $id
