@@ -11,13 +11,15 @@ use App\Models\Tag;
 use App\Services\TagService;
 use App\Services\UploadService;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 use function Illuminate\Events\queueable;
 
 class ProfileService
 {
+    /** Giới hạn số bản ghi mỗi trang để client không kéo cả bảng về (mỗi row có meta_data/dynamic_data dạng longText) */
+    private const MAX_PER_PAGE = 5000;
+
     protected TagService $tagService;
     protected UploadService $uploadService;
 
@@ -59,40 +61,37 @@ class ProfileService
                 'lastRunUser:id,email,display_name',
                 'currentUser:id,email,display_name',
                 'group:id,name',
-                // 'tags:id,name,color,category',
                 'tags' => function ($q) {
                     $q->select('tags.id', 'name', 'color', 'category')
                     ->orderBy('profile_tags.created_at');
                 }
         ]);
-        // TODO: sắp xếp tags theo created_at
 
-        // If user isn't admin, show by permissions
+        // If user isn't admin, show by permissions.
+        // Dùng subquery thay vì pluck() để tránh 3 query phụ + mảng UUID lớn trong RAM
+        // và tránh câu SQL phình to vì hàng nghìn tham số trong IN (...).
         if (!$user->isAdmin()) {
-            $groupShareIds = DB::table('group_shares')->where('user_id', $user->id)->pluck('group_id');
-            $profileShareIds = DB::table('profile_shares')->where('user_id', $user->id)->pluck('profile_id');
-            $groupOwnerIds = DB::table('groups')->where('created_by', $user->id)->pluck('id');
-
-            if(isset($filters['is_deleted']) && $filters['is_deleted'] == 1)
-                $query = Profile::intrashed();
-            else
-                $query = Profile::active();
-
-            $query = $query->select($selectFields)
-                ->where(function ($q) use ($user, $groupShareIds, $profileShareIds, $groupOwnerIds) {
-                    $q->where('created_by', $user->id)
-                        ->orWhereIn('group_id', $groupShareIds)
-                        ->orWhereIn('id', $profileShareIds)
-                        ->orWhereIn('group_id', $groupOwnerIds);
-                })
-                ->with(['creator:id,email,display_name',  'currentUser:id,email,display_name', 'lastRunUser:id,email,display_name', 'group:id,name', 'tags:id,name,color,category']);
+            $userId = $user->id;
+            $query->where(function ($q) use ($userId) {
+                $q->where('created_by', $userId)
+                    ->orWhereIn('group_id', function ($sub) use ($userId) {
+                        $sub->select('group_id')->from('group_shares')->where('user_id', $userId);
+                    })
+                    ->orWhereIn('id', function ($sub) use ($userId) {
+                        $sub->select('profile_id')->from('profile_shares')->where('user_id', $userId);
+                    })
+                    ->orWhereIn('group_id', function ($sub) use ($userId) {
+                        $sub->select('id')->from('groups')->where('created_by', $userId);
+                    });
+            });
         }
 
         // Apply filters
         $this->applyFilters($query, $user, $filters);
 
         // Pagination
-        $perPage = $filters['per_page'] ?? 30;
+        $perPage = (int) ($filters['per_page'] ?? 30);
+        $perPage = max(1, min($perPage, self::MAX_PER_PAGE));
         $page = $filters['page'] ?? null;
         return $query->paginate($perPage, ['*'], 'page', $page);
     }
@@ -120,19 +119,20 @@ class ProfileService
         if (isset($filters['search'])) {
             if (str_contains($filters['search'], 'author:')) {
                 $authorName = str_replace('author:', '', $filters['search']);
-                $createdUser = User::where('display_name', $authorName)->first();
-                if ($createdUser != null) {
-                    $query->where('created_by', $createdUser->id);
+                // value() chỉ lấy 1 cột, không hydrate cả model User
+                $createdUserId = User::where('display_name', $authorName)->value('id');
+                if ($createdUserId != null) {
+                    $query->where('created_by', $createdUserId);
                 }
             } else if (str_contains($filters['search'], 'note:')) {
                 $note = trim(str_replace('note:', '', $filters['search']));
                 $query->where('dynamic_data->note', 'like', "%$note%");
             } else {
-                $query->where(function ($q) use ($filters) {
+                $authorUserId = User::where('display_name', $filters['search'])->value('id');
+                $query->where(function ($q) use ($filters, $authorUserId) {
                     $q->where('name', 'like', "%{$filters['search']}%");
-                    $authorUser = User::where('display_name', $filters['search'])->first();
-                    if ($authorUser) {
-                        $q->orWhere('created_by', $authorUser->id);
+                    if ($authorUserId) {
+                        $q->orWhere('created_by', $authorUserId);
                     }
                 });
             }
@@ -781,6 +781,11 @@ class ProfileService
 
         // Check if user is the creator
         if ($profile->created_by == $logonUser->id) {
+            return true;
+        }
+
+        // Check in owned groups
+        if ($profile->group && $profile->group->created_by == $logonUser->id) {
             return true;
         }
 
