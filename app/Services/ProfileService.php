@@ -71,6 +71,7 @@ class ProfileService
         if (!$user->isAdmin()) {
             $groupShareIds = DB::table('group_shares')->where('user_id', $user->id)->pluck('group_id');
             $profileShareIds = DB::table('profile_shares')->where('user_id', $user->id)->pluck('profile_id');
+            $groupOwnerIds = DB::table('groups')->where('created_by', $user->id)->pluck('id');
 
             if(isset($filters['is_deleted']) && $filters['is_deleted'] == 1)
                 $query = Profile::intrashed();
@@ -78,10 +79,11 @@ class ProfileService
                 $query = Profile::active();
 
             $query = $query->select($selectFields)
-                ->where(function ($q) use ($user, $groupShareIds, $profileShareIds) {
+                ->where(function ($q) use ($user, $groupShareIds, $profileShareIds, $groupOwnerIds) {
                     $q->where('created_by', $user->id)
                         ->orWhereIn('group_id', $groupShareIds)
-                        ->orWhereIn('id', $profileShareIds);
+                        ->orWhereIn('id', $profileShareIds)
+                        ->orWhereIn('group_id', $groupOwnerIds);
                 })
                 ->with(['creator:id,email,display_name',  'currentUser:id,email,display_name', 'lastRunUser:id,email,display_name', 'group:id,name', 'tags:id,name,color,category']);
         }
