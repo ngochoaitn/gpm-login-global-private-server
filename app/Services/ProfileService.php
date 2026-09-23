@@ -111,7 +111,7 @@ class ProfileService
         }
 
         // Filter by group
-        if (isset($filters['group_id']) && $filters['group_id'] != '00000000-0000-0000-0000-000000000000') {
+        if (isset($filters['group_id'])) {
             $query->where('group_id', $filters['group_id']);
         }
 
