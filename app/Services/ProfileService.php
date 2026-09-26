@@ -117,25 +117,31 @@ class ProfileService
 
         // Search
         if (isset($filters['search'])) {
-            if (str_contains($filters['search'], 'author:')) {
-                $authorName = str_replace('author:', '', $filters['search']);
-                // value() chỉ lấy 1 cột, không hydrate cả model User
-                $createdUserId = User::where('display_name', $authorName)->value('id');
-                if ($createdUserId != null) {
-                    $query->where('created_by', $createdUserId);
-                }
-            } else if (str_contains($filters['search'], 'note:')) {
-                $note = trim(str_replace('note:', '', $filters['search']));
-                $query->where('dynamic_data->note', 'like', "%$note%");
-            } else {
-                $authorUserId = User::where('display_name', $filters['search'])->value('id');
-                $query->where(function ($q) use ($filters, $authorUserId) {
-                    $q->where('name', 'like', "%{$filters['search']}%");
-                    if ($authorUserId) {
-                        $q->orWhere('created_by', $authorUserId);
+            // OR, separate by comma, support author: and note: prefix
+            $terms = array_filter(array_map('trim', explode(',', $filters['search'])), fn($t) => $t !== '');
+
+            $query->where(function ($searchQuery) use ($terms) {
+                foreach ($terms as $term) {
+                    if (str_contains($term, 'author:')) {
+                        $authorName = trim(str_replace('author:', '', $term));
+                        $createdUserId = User::where('display_name', $authorName)->value('id');
+                        if ($createdUserId != null) {
+                            $searchQuery->orWhere('created_by', $createdUserId);
+                        }
+                    } else if (str_contains($term, 'note:')) {
+                        $note = trim(str_replace('note:', '', $term));
+                        $searchQuery->orWhere('dynamic_data->note', 'like', "%$note%");
+                    } else {
+                        $authorUserId = User::where('display_name', $term)->value('id');
+                        $searchQuery->orWhere(function ($q) use ($term, $authorUserId) {
+                            $q->where('name', 'like', "%{$term}%");
+                            if ($authorUserId) {
+                                $q->orWhere('created_by', $authorUserId);
+                            }
+                        });
                     }
-                });
-            }
+                }
+            });
         }
 
         // Share mode filter
