@@ -166,6 +166,15 @@ class ProfileService
             });
         }
 
+        // Profile pinned (dynamic_data.is_pinned = true) always on top
+        // CASE cycle for JSON_EXTRACT run only when JSON_VALID,
+        // avoid 1 row dynamic_data error will fail query
+        $query->orderByRaw(
+            "CASE WHEN JSON_VALID(dynamic_data) THEN "
+            . "(CASE WHEN JSON_UNQUOTE(JSON_EXTRACT(dynamic_data, '$.is_pinned')) = 'true' THEN 1 ELSE 0 END) "
+            . "ELSE 0 END DESC"
+        );
+
         // Sort
         if (isset($filters['sort'])) {
             switch ($filters['sort']) {
