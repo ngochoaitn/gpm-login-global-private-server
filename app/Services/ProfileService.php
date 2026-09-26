@@ -177,6 +177,12 @@ class ProfileService
                 case 'name_desc':
                     $query->orderBy('name', 'desc');
                     break;
+                case 'last_opened_desc':
+                    $query->orderBy('last_run_at', 'desc');
+                    break;
+                case 'last_opened_asc':
+                    $query->orderBy('last_run_at', 'asc');
+                    break;
             }
         }
     }

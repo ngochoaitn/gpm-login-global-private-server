@@ -202,6 +202,8 @@ class Profile extends Model
         $this->update([
             'status' => self::STATUS_READY,
             'using_by' => null,
+            'last_used_at' => Carbon::now('UTC'),
+            'last_run_at' => Carbon::now('UTC')
         ]);
     }
 
