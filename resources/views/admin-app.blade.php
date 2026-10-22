@@ -16,6 +16,7 @@
             legacyAdminUrl: @json(url('/admin')),
             logoutUrl: @json(url('/admin/auth/logout')),
             serverVersion: @json(\App\Services\SettingService::$server_version),
+            phpVersion: @json(PHP_VERSION),
             csrfToken: @json(csrf_token()),
             initialUser: @json(auth()->user()),
         };

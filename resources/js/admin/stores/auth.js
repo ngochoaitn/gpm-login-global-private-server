@@ -7,6 +7,7 @@ export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: config.initialUser || null,
         serverVersion: config.serverVersion || '',
+        phpVersion: config.phpVersion || '',
     }),
     getters: {
         isAdmin: (state) => state.user?.system_role === 'ADMIN',

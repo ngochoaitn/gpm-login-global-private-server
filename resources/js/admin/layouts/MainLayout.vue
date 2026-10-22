@@ -11,6 +11,13 @@
                     <div class="app-version-chip" style="margin-top: 2px; display: inline-block">
                         v{{ authStore.serverVersion }}
                     </div>
+                    <div
+                        v-if="authStore.phpVersion"
+                        class="app-version-chip"
+                        style="margin-top: 2px; margin-left: 4px; display: inline-block"
+                    >
+                        PHP {{ authStore.phpVersion }}
+                    </div>
                 </div>
             </div>
 
@@ -69,6 +76,13 @@
                         <div>{{ t('app.title') }}</div>
                         <div class="app-version-chip" style="margin-top: 2px; display: inline-block">
                             v{{ authStore.serverVersion }}
+                        </div>
+                        <div
+                            v-if="authStore.phpVersion"
+                            class="app-version-chip"
+                            style="margin-top: 2px; margin-left: 4px; display: inline-block"
+                        >
+                            PHP {{ authStore.phpVersion }}
                         </div>
                     </div>
                 </div>

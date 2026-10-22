@@ -42,12 +42,14 @@ RUN npm run build
 # -----------------------------------------------------------------------------
 # Stage 2 — PHP dependencies (composer)
 #
-# Must run under PHP 8.1 because composer.lock pins packages that require
-# php <=8.4 (nette/schema, nette/utils). The official composer:* image ships
-# with PHP 8.5+ which refuses to resolve. We bring composer into a php:8.1-cli
-# image instead.
+# Pinned to PHP 8.2 (security-supported, Laravel 9 compatible). The 8.2.x tag
+# always resolves to the latest patch release at build time, so a fresh
+# `--no-cache` build picks up the PHP2Shell fix (>= 8.2.35, CVE-2026-109618 /
+# CVE-2026-109619). It must stay <= 8.4 because composer.lock pins packages
+# that require php <=8.4 (nette/schema, nette/utils); the official composer:*
+# image ships PHP 8.5+ and refuses to resolve. See SECURITY_PATCH_PHP.vi.md.
 # -----------------------------------------------------------------------------
-FROM --platform=$BUILDPLATFORM php:8.1-cli-alpine AS composer-builder
+FROM --platform=$BUILDPLATFORM php:8.2-cli-alpine AS composer-builder
 
 RUN apk add --no-cache git unzip libzip-dev \
     && docker-php-ext-install zip
@@ -72,8 +74,13 @@ RUN composer dump-autoload --no-dev --optimize --classmap-authoritative
 
 # -----------------------------------------------------------------------------
 # Stage 3 — Runtime (per-target PHP/Apache)
+#
+# php:8.2-apache (mod_php) — the 8.2.x tag resolves to the newest patch at
+# build time. Rebuild with `--no-cache` and re-push to ship the PHP2Shell fix
+# (>= 8.2.35) to every user running the published image. See
+# SECURITY_PATCH_PHP.vi.md.
 # -----------------------------------------------------------------------------
-FROM php:8.1-apache AS runtime
+FROM php:8.2-apache AS runtime
 
 # PHP native extensions + build tools (cleaned up in the same layer)
 RUN apt-get update \
