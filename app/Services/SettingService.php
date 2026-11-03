@@ -8,7 +8,7 @@ use App\Models\User;
 
 class SettingService
 {
-    public static $server_version = 24;
+    public static $server_version = 25;
     // v24 -> start use PHP v8.2
 
     public function initializeDefaultSettings()

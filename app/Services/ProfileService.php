@@ -38,7 +38,7 @@ class ProfileService
      */
     public function getProfiles(User $user, array $filters = [], array $extensiveFields = [])
     {
-        $selectFields = ['id', 'name', 'storage_path', 'meta_data', 'group_id', 'created_by', 'status', 'using_by', 'last_run_at', 'last_run_by', 'created_at', 'updated_at', 'dynamic_data'];
+        $selectFields = ['id', 'name', 'storage_path', 'meta_data', 'group_id', 'created_by', 'status', 'using_by', 'last_run_at', 'last_run_by', 'created_at', 'updated_at', 'dynamic_data', 'deleted_at'];
         // Add extensive fields if provided, avoid duplicates
         if (count($extensiveFields) > 0) {
             foreach ($extensiveFields as $field) {
@@ -49,10 +49,18 @@ class ProfileService
         }
 
         // Default, show all active profiles (not soft deleted)
-        if(isset($filters['is_deleted']) && $filters['is_deleted'] == 1)
+        if(isset($filters['is_deleted']) && $filters['is_deleted'] == 1) {
             $query = Profile::intrashed();
-        else
+            if (isset($filters['deleted_older_than_days'])) {
+                $days = (int) $filters['deleted_older_than_days'];
+                if ($days > 0) {
+                    $query->where('deleted_at', '<', Carbon::now()->subDays($days));
+                }
+            }
+        }
+        else {
             $query = Profile::active();
+        }
 
         $query = $query
             ->select($selectFields)

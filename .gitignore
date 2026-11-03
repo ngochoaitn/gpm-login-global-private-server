@@ -20,3 +20,5 @@ latest.zip
 latest-update.zip
 .claude/*.local.json
 .DS_Store
+.DS_Store
+storage/.DS_Store

@@ -31,6 +31,7 @@ class ProfileController extends BaseController
             'page' => $request->page ?? 1,
             'is_deleted' => $request->is_deleted ?? 0,
             'id' => $request->id ?? null,
+            'deleted_older_than_days' => $request->deleted_older_than_days ?? null,
         ];
 
         $extensiveFields = $request->extensive_fields ?? [];
